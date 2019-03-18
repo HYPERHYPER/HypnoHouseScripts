@@ -35,7 +35,7 @@ function sequence (inputs) {
             length: m/2
         },        
         {
-            cue: 3.0,
+            cue: 0.0,
             length: m/2
         },        
         {
