@@ -1,0 +1,34 @@
+//
+// swipeStack.cikernel
+// Mirror
+//
+// Created by Mena Sachdev on 18 Mar 2019 11:06:35am
+// Copyright © 2019 Mena Sachdev. All rights reserved.
+
+float easeInOutQuart(float t, float b, float c, float d) {
+		if ((t/=d/2) < 1) return c/2*t*t*t*t + b;
+		return -c/2 * ((t-=2)*t*t*t - 2) + b;
+}
+
+kernel vec4 apply (sampler src, float time) {
+
+    vec2 uv = destCoord() / samplerSize(src);
+    vec2 st = uv;
+
+    float offset = floor((1.0 - uv.y) * 8.0) / 8.0;
+
+    float t = time * 2.0;
+    t -= offset / 1.0;
+    t = clamp(t, 0.0001, 0.9999);
+    t = easeInOutQuart(t, 0.0, 1.0, 1.0 );
+
+    uv.x /= t;
+
+    if(uv.x > 1.0) uv.x = (st.x / (1.0 - t)) + (1.0 - (1.0 / (1.0 - t)));
+
+
+    vec4 color = sample (src,  samplerTransform(src, uv * samplerSize(src)));
+    
+        
+    return color;
+}
