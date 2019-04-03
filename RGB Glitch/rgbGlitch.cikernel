@@ -1,0 +1,27 @@
+//
+// rgbGlitch.cikernel
+// RGB Glitch
+//
+// Created by Mena Sachdev on 1 Apr 2019 1:38:52pm
+// Copyright © 2019 Mena Sachdev. All rights reserved.
+
+kernel vec4 apply (sampler src, float iTime, float cTime) {
+
+    vec2 st = destCoord() / samplerSize(src);
+    float ramp = (10.02 * (pow(fract(((25.0-cTime)) * 500.0), 8.0)));
+
+    st -= vec2(0.5);
+    st *= 1.0 - 0.03 * pow(abs(sin(3.1415 * 16.5 * cTime + 12.0/10.0)), 10.0);
+    
+    200.0 - (iTime * .3) - 2.0 *ramp;
+    st += vec2(0.5);
+
+    vec4 cR = sample(src, samplerTransform(src, (st - vec2(0.4*ramp, 0.0))  * samplerSize(src)));
+    vec4 cG = sample(src, samplerTransform(src, (st) * samplerSize(src)));
+    vec4 cB = sample(src, samplerTransform(src, (st + + vec2(0.4*ramp, 0.0)) * samplerSize(src)));
+
+    vec4 final = vec4(cR.r, cG.g, cB.b, 1.0);
+
+    vec4 outColor = final;
+    return outColor;
+}

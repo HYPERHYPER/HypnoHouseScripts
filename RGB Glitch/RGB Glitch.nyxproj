@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project id="GH6Gc2" application="com.hypno.nyx" application_version="0.9.1" hypnokit_version="1536" name="RGB Glitch">
+  <cameras id="jkJ0zT" name="Cameras">
+    <file id="JwMvNY" path="../../../../Desktop/SCRIPTS/INPUTS/face-15s-960-30fps.mp4" name="face-15s-960-30fps.mp4" main="1"/>
+  </cameras>
+  <file id="vBZlg0" path="CHROMA-TEST.mp4" name="CHROMA-TEST.mp4"/>
+  <file id="d14MOc" path="grain.cikernel" name="grain.cikernel"/>
+  <file id="H7vWY8" path="interlace.cikernel" name="interlace.cikernel"/>
+  <file id="LIZYM2" path="music.mp3" name="music.mp3"/>
+  <file id="dh9t6K" path="RGB Glitch.js" name="RGB Glitch.js" main="1"/>
+  <file id="VkGZK8" path="rgbGlitch.cikernel" name="rgbGlitch.cikernel"/>
+  <file id="QowxXW" path="rgbShiftX.cikernel" name="rgbShiftX.cikernel"/>
+</project>

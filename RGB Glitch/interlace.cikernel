@@ -1,0 +1,28 @@
+//
+// interlace.cikernel
+// RGB Glitch
+//
+// Created by Mena Sachdev on 1 Apr 2019 2:06:34pm
+// Copyright © 2019 Mena Sachdev. All rights reserved.
+
+kernel vec4 apply (sampler src, float iTime, float cTime) {
+    vec2 uv = destCoord() / samplerSize(src);
+    vec4 final;
+    float numLines = 500.0;
+    float interlaceAmount = 0.0;
+
+    if (iTime < 0.25) interlaceAmount = 0.05 * sin(3.15159 * cTime * 2.0);
+    else interlaceAmount = 0.001;
+
+        if( mod(floor(uv.y * numLines + iTime * 5.0), 2.0) == 1.0 ) {
+        uv.x += interlaceAmount + 0.5 * (uv.y * numLines - floor(uv.y * numLines))/numLines;
+
+        final = sample(src, samplerTransform(src, (uv * 0.95) * samplerSize(src)));    
+    }
+    else {
+        final = sample(src, samplerTransform(src, (uv) * samplerSize(src)));    
+    }
+
+    vec4 outColor = vec4(final.rgb, 1.0);
+    return outColor;
+}
