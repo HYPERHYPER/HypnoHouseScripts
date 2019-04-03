@@ -1,0 +1,35 @@
+//
+// vhs.cikernel
+// VHS
+//
+// Created by Mena Sachdev on 21 Mar 2019 1:06:17pm
+// Copyright © 2019 Mena Sachdev. All rights reserved.
+
+float rand(vec2 co) {
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+    
+}
+
+
+kernel vec4 apply(sampler src, float time, float noiseAmount){
+
+    vec2 uv = destCoord() / samplerSize(src);
+    float split = 1 - fract(time/2);
+    float scanOffset = 0.01;
+    vec2 uv1 = uv;
+    vec2 uv2 = uv;
+    if(uv.y > split){
+        uv.x += scanOffset;
+        uv1.x += scanOffset;
+        uv2.x += scanOffset;
+    }
+
+    vec4 cR = noiseAmount * (rand(uv1 * 10.0 * time) - 0.5) + sample(src, samplerTransform(src, uv1 * samplerSize(src)));
+    vec4 cG = noiseAmount * (rand(uv * 10.0 * time) - 0.5) + sample(src, samplerTransform(src, uv * samplerSize(src)));
+    vec4 cB = noiseAmount * (rand(uv2 * 10.0 * time) - 0.5) + sample(src, samplerTransform(src, uv2 * samplerSize(src)));
+
+    vec4 final = vec4(cR.r, cG.g, cB.b, 1.0);
+    vec4 outputColor = final;
+    return outputColor;
+
+}
