@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project id="USNiN5" application="com.hypno.nyx" application_version="0.9.1" hypnokit_version="1536" name="Prism">
+  <cameras id="UOKB7Q" name="Cameras">
+    <file id="eJqbQD" path="../../../../Desktop/SCRIPTS/INPUTS/eye-a-4s-720-30fps.mp4" name="eye-a-4s-720-30fps.mp4"/>
+    <file id="fN15UG" path="../../../../Desktop/SCRIPTS/INPUTS/face-12s-960-30fps.mp4" name="face-12s-960-30fps.mp4" main="1"/>
+    <file id="FgQgSo" path="../../../../Desktop/SCRIPTS/INPUTS/face-couple-4s-960.mp4" name="face-couple-4s-960.mp4"/>
+  </cameras>
+  <file id="iCLbQM" path="jewel.cikernel" name="jewel.cikernel"/>
+  <file id="g5faa3" path="music.mp3" name="music.mp3"/>
+  <file id="KCoGBZ" path="normalmap.mp4" name="normalmap.mp4"/>
+  <file id="LU2YH4" path="PRISM COLOURZ.mp4" name="PRISM COLOURZ.mp4"/>
+  <file id="yLaqY8" path="Prism.js" name="Prism.js" main="1"/>
+  <file id="ve9WUi" path="starglow.frag" name="starglow.frag"/>
+</project>
