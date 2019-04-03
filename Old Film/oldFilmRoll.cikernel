@@ -1,0 +1,15 @@
+//
+// oldFilmRoll.cikernel
+// Old Film
+//
+// Created by Mena Sachdev on 19 Mar 2019 11:37:14am
+// Copyright © 2019 Mena Sachdev. All rights reserved.
+
+kernel vec4 apply (sampler src, float time) {
+    vec2 p = destCoord() / samplerSize(src);
+    p.y = fract(p.y + time);
+    
+    vec4 outputColor = sample(src, samplerTransform(src, p * samplerSize(src)));
+
+    return outputColor;
+}
