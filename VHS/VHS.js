@@ -63,51 +63,27 @@ function sequence (inputs) {
     let clips = [
         {
             cue: 0.0,
-            length: m/2
+            length: m * 0.75
         }, 
         {
-            cue: 0.3,
-            length: m/4
-        },  
-        {
-            cue: 2.0,
+            cue: 2.4,
             length: m/2
         },        
         {
-            cue: 1.5,
-            length: m/4
-        },        
+            cue: 2.5,
+            length: m * 0.75
+        },             
         {
-            cue: 3.5,
+            cue: 3.0,
             length: m/2
         },        
-        {
-            cue: 1.0,
-            length: m/2
-        },        
-        {
-            cue: 8.0,
-            length: m/8
-        },
-        {
-            cue: 8.0,
-            length: m/8
-        },
         {
             cue: 0.2,
-            length: m/4
-        },
-        {
-            cue: 7.0,
             length: m/2
         },
         {
-            cue: 0.0,
-            length: m/4
-        },
-        {
-            cue: 7.5,
-            length: m/4 - 3/30
+            cue: 2.0,
+            length: m
         },
     ]
 
@@ -152,7 +128,7 @@ function render (context, instruction) {
                     modify ANGLE parameter to set capture angle
                 */
 
-                let angle = 0
+                let angle = 90
 
                 let result = auxRotationHandler(angle)
 
@@ -196,12 +172,16 @@ function render (context, instruction) {
             let x = easeOutQuad(instruction.time, 0.0, 1.2, 1.0)
             rgb.setValue(x, "intensity")
             instruction.addKernel(rgb, "camera")
-        } if(i==8 || i == 10){
-            let x = 6.0 * Math.sin(1.2 * instruction.time * Math.PI)
-            console.log(x)
+        } if((i==4 && instruction.time >0.5)){
+            let x = 4.0 * Math.sin(2.6 * (instruction.time- 0.5) * Math.PI)
             rgb.setValue(x, "intensity")
             instruction.addKernel(rgb, "camera")
         } 
+        if((i == 3 && instruction.time < 0.4 )){
+            let x = 4.0 * Math.sin(2.7 * instruction.time * Math.PI)
+            rgb.setValue(x, "intensity")
+            instruction.addKernel(rgb, "camera")
+        }
         
     }
 
@@ -216,13 +196,33 @@ function render (context, instruction) {
     {
         //COLOR
         var CIVibrance = Filter("CIVibrance")
-        CIVibrance.setValue(0.2, "inputAmount")
+        CIVibrance.setValue(0.6, "inputAmount")
         instruction.addFilter(CIVibrance, "camera")
 
         let colorControl = Filter("CIColorControls")
         colorControl.setValue("camera", "inputImage")
-        colorControl.setValue(1.6, "inputSaturation")
+        colorControl.setValue(1.3, "inputSaturation")
+        colorControl.setValue(0.05, "inputBrightness")
         instruction.addFilter(colorControl, "camera")
     }
     
+}
+
+function exportSettings() {
+ 
+    let bitrate = (HYPNO.composition.renderSize.width) * (HYPNO.composition.renderSize.height) * (30.0)
+ 
+    bitrate *= 0.42
+ 
+    return {
+        video: {
+            averageBitRate: bitrate,
+            profileLevel: "H264Baseline41"
+        },
+        audio: {
+            numberOfChannels: 2,
+            sampleRate: 44100,
+            bitRate: 64000
+        }
+    }
 }

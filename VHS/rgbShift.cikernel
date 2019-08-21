@@ -10,7 +10,7 @@ kernel vec4 apply (sampler src, float intensity) {
 
     vec2 uv = destCoord() / samplerSize(src);
 
-    float amount = intensity * 0.005;
+    float amount = intensity * 0.002;
 
     vec4 cR = sample(src, samplerTransform(src, (uv + amount)  * samplerSize(src)));
     vec4 cG = sample(src, samplerTransform(src, (uv) * samplerSize(src)));
