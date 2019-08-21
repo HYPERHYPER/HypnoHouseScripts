@@ -6,6 +6,7 @@
 // Copyright © 2019 Mena Sachdev. All rights reserved.
 
 const oldFilmRoll = new Kernel(File("oldFilmRoll.cikernel").loadFileAsString())
+const overlay = new Kernel(File("overlay.cikernel").loadFileAsString())
 
 function fps(time) {
     return Math.floor(time * 30) / 30
@@ -53,8 +54,12 @@ function easeOutCubic(t, d, b, c){
     return c*((t=t/d-1)*t*t + 1) + b;
 }
 
+let logo = Image.imageNamed("logo.png")
+
 function sequence (inputs) {
 
+    HYPNO.composition.frameDuration = 30
+    HYPNO.composition.preferredTimescale = 60000
     HYPNO.composition.renderSize.width = 960
     HYPNO.composition.renderSize.height = 1280
 
@@ -100,7 +105,7 @@ function sequence (inputs) {
             cue: 0.0,
             length: m/2
         },
-                {
+        {
             cue: 0.0,
             length: 2/30
         },
@@ -116,10 +121,13 @@ function sequence (inputs) {
     
     let textureTrack = new Track("texture")
     let musicTrack = new Track("music")
+
     let textureClip = new Clip(0.0, duration, textureInput.name, "video")
     let musicClip = new Clip(0.0, duration, musicInput.name, "audio")
+
     textureTrack.add(textureClip)
     musicTrack.add(musicClip)
+
     tracks.push(textureTrack)
     tracks.push(cameraTrack);
     tracks.push(musicTrack)
@@ -176,59 +184,83 @@ function render (context, instruction) {
 
     //COLOR
     {
-        let max = 0.8
+        let max = 0.95
         let clamp = Filter("CIColorClamp")
         clamp.setValue([max, max, max, 1.0], "inputMaxComponents")
         instruction.addFilter(clamp, "camera")
 
         let colorControl = Filter("CIColorControls")
         colorControl.setValue("camera", "inputImage")
-        colorControl.setValue(0.75, "inputSaturation")
+        colorControl.setValue(0.9, "inputSaturation")
         instruction.addFilter(colorControl, "camera")
     }
 
     //TEXTURE OVERLAY    
+
+    let invert = Filter("CIColorInvert")
+    instruction.addFilter(invert, "logo")
+
+    let composite = Filter ("Composite");
+    composite.setValue (instruction.getImage("camera"), "inputImage");
+    composite.setValue ("SourceOver", "inputBlendMode");
+    composite.setValue (logo, "inputOverlayImage"); 
+
     let texture = Filter("CISourceOverCompositing")
     texture.setValue(instruction.getImage("texture"), "inputImage")
     texture.setValue(instruction.getImage("camera"), "inputBackgroundImage")
+
     let blend = Filter("CIScreenBlendMode")
     blend.setValue(instruction.getImage("texture"), "inputBackgroundImage")
     blend.setValue(instruction.getImage("camera"), "inputImage")
-    if(i== 0 || i == 8){
+
+    if(i== 0 || i == 9){
         instruction.addFilter(texture, "camera")
+        instruction.addFilter(composite, "camera");
     }
     if(i == 1){
         if(t < 0.5){
             instruction.addFilter(texture, "camera")
+            instruction.addFilter(composite, "camera");
         } else {
-            instruction.setAlpha(0.60, "texture")
+            instruction.setAlpha(0.20, "texture")
             instruction.addFilter(blend, "camera")
         }   
     }
-    if(i == 7){
+    if(i == 8){
         if(t < 0.76){
             instruction.setAlpha(0.60, "texture")
             instruction.addFilter(blend, "camera")
         } else {
             instruction.addFilter(texture, "camera")
+            instruction.addFilter(composite, "camera");
         } 
     } else {
-        instruction.setAlpha(0.60, "texture")
+        instruction.setAlpha(0.40, "texture")
         instruction.addFilter(blend, "camera")
     }
 
     //FILM ROLL EFFECT
+    let blur = Filter("CIMotionBlur")
+    blur.setValue(instruction.getImage("camera"), "inputImage")
+    blur.setValue(73.8, "inputAngle")
     if(i == 1){
         let r = easeOutCubic(t, 1.0, 0.0, 5.0)
         oldFilmRoll.setValue(r, "time")
         instruction.addKernel(oldFilmRoll, "camera")
+
+        blur.setValue(50.0 * (1.0 - t), "inputRadius")
+        instruction.addFilter(blur, "camera")
     }
-    if(i == 4 || i == 7){
-        let r = easeInCubic(t, 1.0, 0.0, 5.0)
+    if(i == 5 || i == 8){
+        let r = easeInCubic(t, 1.0, 0.0, 10.0)
         oldFilmRoll.setValue(r, "time")
         instruction.addKernel(oldFilmRoll, "camera")
+        if(t > 0.3){
+            blur.setValue(50.0 * (1.3 - t), "inputRadius")  
+            instruction.addFilter(blur, "camera")
+        }
     }
-
+    
 }
 
 

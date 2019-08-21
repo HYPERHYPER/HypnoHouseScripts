@@ -1,0 +1,11 @@
+//
+// overlay.cikernel
+// Kennedy-Coachella
+//
+// Created by Mena Sachdev on 9 Apr 2019 2:34:50pm
+// Copyright © 2019 Mena Sachdev. All rights reserved.
+
+kernel vec4 apply(sampler src, sampler overlay) {
+    vec4 outputColor = sample(overlay, samplerCoord(overlay));
+    return outputColor;
+}
