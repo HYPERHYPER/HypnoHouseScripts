@@ -5,16 +5,29 @@
 // Created by Mena Sachdev on 18 Mar 2019 11:40:45am
 // Copyright © 2019 Mena Sachdev. All rights reserved.
 
-kernel vec4 apply (sampler src, float direction) {
-    //if direction == 1 --> horizontal mirror
-    //if direction == 0 --> vertical mirror (default)
+kernel vec4 apply (sampler src, float direction, float side) {
+    //if direction == 1 && side == 0 --> horizontal mirror showing top half
+    //if direction == 0 && side == 0 --> vertical mirror showing right side
+    //if direction == 1 && side == 1 --> horizontal mirror showing bottom half
+    //if direction == 0 && side == 1 --> vertical mirror showing left side (default)
+
     vec2 uv = destCoord() / samplerSize(src);
-    if(direction == 1){
+    if(direction == 1 && side == 0){
         if(uv.y < 0.5){
             uv.y = 1.0 - uv.y;
         }   
-    } else {
+    } 
+    else if (direction == 0 && side == 0){
         if(uv.x < 0.5){
+            uv.x = 1.0 - uv.x;
+        }
+    }
+    else if(direction == 1 && side == 1){
+        if(uv.y > 0.5){
+            uv.y = 1.0 - uv.y;
+        }  
+    } else {
+        if(uv.x > 0.5){
             uv.x = 1.0 - uv.x;
         }
     }

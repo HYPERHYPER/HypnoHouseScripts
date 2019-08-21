@@ -84,7 +84,7 @@ function render (context, instruction) {
         
 
     //MIRROR STACK EFFECT
-    if(i == 0 || i == 2 || i == 4 || i == 6 || i == 7){
+    if(i == 0 || i == 2 || i == 4 || i == 7){
         mirrorStack.setValue(t, "time")
         instruction.addKernel(mirrorStack, "camera")
     }
@@ -92,13 +92,20 @@ function render (context, instruction) {
 // i == 5 flip mirror for other half
 
     //MIRROR EFFECT
-    if(i > 0 && i < 7 && i != 3){
-        if(i == 2 || i == 5){
+    if(i > 0 && i < 6 && i != 3){
+        if(i == 2){
             mirror.setValue(1, "direction")
+            mirror.setValue(0, "side")
         }
-        if(i == 1 || i == 4 ||i == 6){
+        if(i == 5){
             mirror.setValue(0, "direction")
+            mirror.setValue(1, "side")
         }
+        if(i == 1 || i == 4){
+            mirror.setValue(0, "direction")
+            mirror.setValue(0, "side")
+        }
+
         instruction.addKernel(mirror, "camera")
     }
 
