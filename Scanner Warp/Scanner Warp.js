@@ -6,10 +6,7 @@
 // Copyright © 2019 Mena Sachdev. All rights reserved.
 
 const warp = Kernel(File("blobWarp.cikernel").loadFileAsString())
-
-function fps(time) {
-    return Math.floor(time * 30) / 30
-}
+const sinwave = Kernel(File("sinwaveWarp.cikernel").loadFileAsString())
 
 function easeInOutBack(t, b, c, d) {
 return -c * Math.cos(t/d * (Math.PI/2)) + c + b;
@@ -45,62 +42,70 @@ function auxRotationHandler(angle){
     return result
 }
 
+HYPNO.composition.timeFormat = "frames"
+HYPNO.composition.preferredTimescale = 30
+HYPNO.composition.renderSize.width = 960
+HYPNO.composition.renderSize.height = 1280
+
 
 function sequence (inputs) {
 
-    HYPNO.composition.renderSize.width = 960
-    HYPNO.composition.renderSize.height = 1280
+    let tracks = []
 
-    let tracks = [];
-
-    let cameraInput = inputs ["camera"];
+    let cameraInput = inputs["camera"]
     let musicInput = inputs["music.mp3"]
 
-    let d = musicInput.duration
-    let m = d / 4
-
     let clips = [
-
         {
-            cue: 2.0,
-            length: m * 1.25
+            cue: 0,
+            ticks: 67,
+            speed: 1.0
         },
         {
-            cue: 0.0,
-            length: m * 0.75
+            cue: 30,
+            ticks: 45,
+            speed: 1.8
+        },
+        {
+            cue: 60,
+            ticks: 67,
+            speed: 1.0
         },
   
         {
-            cue: 1.4,
-            length: m
+            cue: 50,
+            ticks: 90,
+            speed: 1.0
         },
         {
-            cue: 1.5,
-            length: m/4
-        },
-        {
-            cue: 0.3,
-            length: m * 0.75
+            cue: 62,
+            ticks: 90,
+            speed: 1.0
         },
     ]
 
     let cameraTrack = Track ("camera");
-    let duration = 0
+    let runtime = 0.0
+
     clips.forEach(c=>{
-        let cameraClip = new Clip(c.cue, fps(c.length), cameraInput.name, "video")
-        cameraTrack.add(cameraClip)
-        duration += fps(c.length)
+        let runlength = new Time(c.ticks, 30)
+        let modifiedRunlength = new Time(Math.floor(c.ticks * c.speed), 30)
+        let clip = new Clip(new Time(c.cue, 30), modifiedRunlength, cameraInput.name, "video")
+        
+        clip.scaleToDuration(runlength)
+        
+        cameraTrack.add(clip)
+        runtime += c.ticks
     })
 
-    let musicClip = new Clip(0.0, duration, musicInput.name, "audio")
-
+    let musicClip = new Clip(new Time(0, 30), new Time(runtime, 30), musicInput.name, "audio")
     let musicTrack = new Track("music")
-
     musicTrack.add(musicClip)
-    tracks.push(musicTrack)
-    tracks.push(cameraTrack);
 
-    return tracks;
+    tracks.push(cameraTrack)
+    tracks.push(musicTrack)
+
+    return tracks
 }
 
 function render (context, instruction) {
@@ -155,21 +160,20 @@ function render (context, instruction) {
             instruction.addFilter(displace, "camera")
         }
         
-        if(i == 1){
+        if(i == 2){
             warp.setValue(t/2, "time")
             instruction.addKernel(warp, "camera")
         }
         if(i == 4){
-            let r = 1.0 + Math.sin(t * Math.PI/2)
-            warp.setValue(r, "time")
-            instruction.addKernel(warp, "camera")
+            sinwave.setValue(t, "time")
+            instruction.addKernel(sinwave, "camera")
         }
 
-        if(i==2){
+        if(i==3 && t > 0.5){
 
             let bump = Filter("CIBumpDistortionLinear")
-            let r = easeInOutBack(t, 0.5, 0.6, 0.9)
-            bump.setValue([500.0, 100 + 734.0 * r], "inputCenter")
+            let r = easeInOutBack(t-0.5, 0.5, 0.6, 0.5)
+            bump.setValue([480.0, 100 + 734.0 * r], "inputCenter")
             bump.setValue(2.0, "inputScale")
             instruction.addFilter(bump, "camera")
 
@@ -182,14 +186,33 @@ function render (context, instruction) {
         var CIVibrance = Filter("CIVibrance")
         CIVibrance.setValue(0.2, "inputAmount")
         instruction.addFilter(CIVibrance, "camera")
-        instruction.addFilter(CIVibrance, "support")
 
         let colorControl = Filter("CIColorControls")
         colorControl.setValue("camera", "inputImage")
-        colorControl.setValue(1.3, "inputSaturation")
+        colorControl.setValue(1.2, "inputSaturation")
         colorControl.setValue(1.1, "inputContrast")
+        
         instruction.addFilter(colorControl, "camera")
-        instruction.addFilter(colorControl, "support")
+
     }
     
+}
+
+function exportSettings() {
+ 
+    let bitrate = (HYPNO.composition.renderSize.width) * (HYPNO.composition.renderSize.height) * (30.0)
+ 
+    bitrate *= 0.4
+ 
+    return {
+        video: {
+            averageBitRate: bitrate,
+            profileLevel: "H264Baseline41"
+        },
+        audio: {
+            numberOfChannels: 2,
+            sampleRate: 44100,
+            bitRate: 64000
+        }
+    }
 }

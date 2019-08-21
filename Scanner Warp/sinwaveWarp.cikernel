@@ -1,0 +1,19 @@
+//
+// sinwaveWarp.cikernel
+// Branding-Border
+//
+// Created by Mena Sachdev on 23 May 2019 11:36:33am
+// Copyright © 2019 Mena Sachdev. All rights reserved.
+
+kernel vec4 apply (sampler src, float time) {
+    float power = 0.04;
+    float verticalSpread = 50.0;
+
+    vec2 uv = destCoord() / samplerSize(src);
+    vec4 outputColor = sample (src, samplerCoord (src));
+    float y = (uv.y + time * 0.5) * verticalSpread;
+    uv.x += (sin(y) + sin(y * 10.0) * 0.2 + sin(y * 50.0) * 0.03)
+    * power * sin(uv.y * 3.14159) * sin(time);
+    outputColor = sample(src, samplerTransform(src, (uv) * samplerSize(src))); 
+    return outputColor;
+}
