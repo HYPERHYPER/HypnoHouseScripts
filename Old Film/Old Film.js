@@ -6,7 +6,6 @@
 // Copyright © 2019 Mena Sachdev. All rights reserved.
 
 const oldFilmRoll = new Kernel(File("oldFilmRoll.cikernel").loadFileAsString())
-const overlay = new Kernel(File("overlay.cikernel").loadFileAsString())
 
 function fps(time) {
     return Math.floor(time * 30) / 30
