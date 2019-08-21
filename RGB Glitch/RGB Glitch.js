@@ -5,7 +5,6 @@
 // Created by Mena Sachdev on 21 Mar 2019 4:26:38pm
 // Copyright © 2019 Mena Sachdev. All rights reserved.
 
-const grain = Kernel(File("grain.cikernel").loadFileAsString())
 const rgbGlitch = Kernel(File("rgbGlitch.cikernel").loadFileAsString())
 const interlace = Kernel(File("interlace.cikernel").loadFileAsString())
 const rgbShift = Kernel(File("rgbShiftX.cikernel").loadFileAsString())
@@ -163,18 +162,6 @@ function render (context, instruction) {
             }        
         }
 
-        // if(overlaySize.width != 960 && overlaySize.height != 1280){
-        //     let scaler = 1280/overlaySize.height
-        //     let scale = AffineTransform.makeScale(scaler, scaler)
-        //     instruction.setAffineTransform(scale, "camera")
-        // }
-    }
-
-    {
-        //grain
-        grain.setValue(t, "time")
-        grain.setValue(0.07, "strength")
-        instruction.addKernel(grain, "camera")
     }
 
     if(i == 3 || i == 7 | i == 8 || i == 4){
@@ -187,10 +174,10 @@ function render (context, instruction) {
     { // RGB GLITCH & SHIFT
         let r, p;
 
-        if(i == 0 || i == 2 || i == 4 || i == 5|| i == 8){
+        if(i == 0 || i == 2 || i == 4 || i == 5|| i == 8 || i == 6 | i == 7 || i ==9 || i == 10){
             r = 0
         } else if(i==3){
-            r = 3000
+            r = 0
         } 
         else {
             r = 5.0
@@ -219,7 +206,7 @@ function render (context, instruction) {
 
     // CIColorControls
     const CIColorControls = Filter("CIColorControls")
-    CIColorControls.setValue(1.3, "inputSaturation")
+    CIColorControls.setValue(1.1, "inputSaturation")
     instruction.addFilter(CIColorControls, "camera")
 
     var CIVibrance = Filter("CIVibrance")
