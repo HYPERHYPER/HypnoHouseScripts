@@ -8,15 +8,6 @@
 const starglow = Shader(File("starglow.frag").loadFileAsString());
 const jewel = Kernel(File("jewel.cikernel").loadFileAsString());
 
-
-function fps(time) {
-    return Math.floor(time * 30) / 30
-}
-
-// function easeInQuad(t, b, c, d) {
-// 		return c*(t/=d)*t + b;
-// }
-
 function auxRotationHandler(angle){
     /*
     // handles AUX input angles and adjusts scale, translation, and rotation
@@ -47,6 +38,11 @@ function auxRotationHandler(angle){
     return result
 }
 
+HYPNO.composition.timeFormat = "frames"
+HYPNO.composition.preferredTimescale = 30
+HYPNO.composition.renderSize.width = 960
+HYPNO.composition.renderSize.height = 1280
+
 function sequence (inputs) {
 
     HYPNO.composition.renderSize.width = 960
@@ -58,65 +54,53 @@ function sequence (inputs) {
     let musicInput = inputs["music.mp3"]
     let jewelInput = inputs["normalmap.mp4"]
 
-    let d = musicInput.duration
-    let m = d / 4
-
     let clips = [
         {
-            cue: 1.2,
-            length: m/2
+            cue: 36,
+            ticks: 66
         },
         {
-            cue: 1.0,
-            length: m/4
-        },
-        {
-            cue: 0.0,
-            length: m/4
-        },
-        {
-            cue: 1.2,
-            length: m
+            cue: 36,
+            ticks: 70
         },
   
         {
-            cue: 1.4,
-            length: m/2
+            cue: 42,
+            ticks: 38
         },
         {
-            cue: 1.0,
-            length: m/2
+            cue: 30,
+            ticks: 34
         },
         {
-            cue: 1.5,
-            length: m 
+            cue: 45,
+            ticks: 72
         },
     ]
 
     let cameraTrack = Track ("camera");
-    let duration = 0
+    let runtime = 0
     clips.forEach(c=>{
-        let cameraClip = new Clip(c.cue, fps(c.length), cameraInput.name, "video")
-        cameraTrack.add(cameraClip)
-        duration += fps(c.length)
+        let runlength = new Time(c.ticks, 30)
+        let clip = new Clip(new Time(c.cue, 30), runlength, cameraInput.name, "video")     
+        cameraTrack.add(clip)
+        runtime += c.ticks
     })
 
-    let jewelClip = new Clip(0.0, fps(duration - m), jewelInput.name, "video")
-    let jewelClip2 = new Clip(0.0, fps(m + 0.02), jewelInput.name, "video")
-    let musicClip = new Clip(0.0, duration, musicInput.name, "audio")
-
     let jewelTrack = new Track("jewel")
-    let musicTrack = new Track("music")
+    let jewelClip = new Clip(new Time(0, 30), new Time(208, 30), jewelInput.name, "video")
+    let jewelClip2 = new Clip(new Time(0, 30), new Time(72, 30), jewelInput.name, "video")
 
     jewelTrack.add(jewelClip)
     jewelTrack.add(jewelClip2)
 
+    let musicTrack = new Track("music")
+    let musicClip = new Clip(new Time(0, 30), new Time(runtime, 30), musicInput.name, "audio")
     musicTrack.add(musicClip)
-    tracks.push(musicTrack)
 
     tracks.push(jewelTrack)
     tracks.push(cameraTrack);
-
+    tracks.push(musicTrack)
     return tracks;
 }
 
@@ -168,7 +152,8 @@ function render (context, instruction) {
         }
     }
 
-    if(i== 3 || i == 5){
+    //JEWEL DISPLACEMENT
+    if(i== 1 || i == 4){
 
         jewel.setValue(instruction.getImage("jewel"), "image")
         jewel.setValue(7.0, "sheen")
@@ -177,6 +162,7 @@ function render (context, instruction) {
         instruction.addKernel(jewel, "camera")
     }
 
+    //ZOOM BLUR TRANSITION
     if(i == 4){
         if(t < 0.2){
             const CIZoomBlur = Filter("CIZoomBlur")
@@ -185,7 +171,7 @@ function render (context, instruction) {
             instruction.addFilter(CIZoomBlur, "camera")
         }
     }
-    if(i == 7){
+    if(i == 2){
         if(t < 0.1){
             const CIZoomBlur = Filter("CIZoomBlur")
             CIZoomBlur.setValue(20.0 - 200 * t, "inputAmount")
@@ -195,6 +181,7 @@ function render (context, instruction) {
 
     }
 
+    //STARGLOW
     starglow.setUniformi(instruction.index, "INSTRUCTION")
     starglow.setUniformf(context.time, "TIME")
     starglow.setUniformf(instruction.time, "INSTRUCTION_TIME")
