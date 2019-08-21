@@ -1,0 +1,21 @@
+//
+// mosaic.cikernel
+// Arrivals
+//
+// Created by Mena Sachdev on 12 Jul 2019 10:56:42am
+// Copyright © 2019 Mena Sachdev. All rights reserved.
+
+kernel vec4 apply (sampler src, float tileNum, float bottom, float top, float format) {
+    vec2 uv = destCoord() / samplerSize(src);
+    if(uv.y < top && uv.y > bottom){
+        if(format == 0.0){
+            uv.x = (floor(uv.x * tileNum)/tileNum);
+            uv.y = (floor(uv.y * (tileNum * 1.25))/(tileNum*1.25));
+        } else {
+            uv.x = (floor(uv.x * tileNum)/tileNum);
+            uv.y = (floor(uv.y * (tileNum * 1.78))/(tileNum*1.78));
+        }
+    }
+    vec4 outputColor = sample (src,  samplerTransform(src, uv * samplerSize(src)));
+    return outputColor;
+}
