@@ -47,7 +47,7 @@ function sequence (inputs) {
             length: m/2
         },        
         {
-            cue: 3.0,
+            cue: 1.0,
             length: m/2
         },        
         {
@@ -55,7 +55,7 @@ function sequence (inputs) {
             length: m/2
         },        
         {
-            cue: 3.0,
+            cue: 2.8,
             length: m/2
         }
     ]
@@ -81,6 +81,7 @@ function render (context, instruction) {
     
     let i = instruction.index
     let t = instruction.time
+        
 
     //MIRROR STACK EFFECT
     if(i == 0 || i == 2 || i == 4 || i == 6 || i == 7){
@@ -88,12 +89,14 @@ function render (context, instruction) {
         instruction.addKernel(mirrorStack, "camera")
     }
 
+// i == 5 flip mirror for other half
+
     //MIRROR EFFECT
-    if(i > 0 && i < 7){
-        if(i == 2 || i == 3){
+    if(i > 0 && i < 7 && i != 3){
+        if(i == 2 || i == 5){
             mirror.setValue(1, "direction")
         }
-        if(i == 1 || i == 4 || i == 5 || i == 6){
+        if(i == 1 || i == 4 ||i == 6){
             mirror.setValue(0, "direction")
         }
         instruction.addKernel(mirror, "camera")
@@ -101,8 +104,9 @@ function render (context, instruction) {
 
     //Coloring
     let colorControls = Filter("CIColorControls")
-    colorControls.setValue(1.5, "inputSaturation")
-    
+    colorControls.setValue(1.2, "inputSaturation")
+    colorControls.setValue(0.05, "inputBrightness")
+    colorControls.setValue(1.2, "inputContrast")
     instruction.addFilter(colorControls, "camera")
 
 }
