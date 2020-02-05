@@ -70,11 +70,11 @@ function sequence (inputs) {
             length: m/2
         },        
         {
-            cue: 2.5,
+            cue: 0.5,
             length: m * 0.75
         },             
         {
-            cue: 3.0,
+            cue: 1.0,
             length: m/2
         },        
         {
@@ -82,18 +82,24 @@ function sequence (inputs) {
             length: m/2
         },
         {
-            cue: 2.0,
+            cue: 1.0,
             length: m
         },
     ]
 
     let cameraTrack = Track ("camera");
     let duration = 0
+    let captureLength = 0
     clips.forEach(c=>{
         let cameraClip = new Clip(c.cue, fps(c.length), cameraInput.name, "video")
         cameraTrack.add(cameraClip)
         duration += fps(c.length)
+
+        if(c.cue + c.length > captureLength){
+            captureLength = c.cue + c.length
+        }
     })
+    print(captureLength)
 
     let musicClip = new Clip(0.0, duration, musicInput.name, "audio")
     let overlayClip = new Clip(0.0, duration, overlayInput.name, "video")
@@ -196,12 +202,12 @@ function render (context, instruction) {
     {
         //COLOR
         var CIVibrance = Filter("CIVibrance")
-        CIVibrance.setValue(0.6, "inputAmount")
+        CIVibrance.setValue(0.2, "inputAmount")
         instruction.addFilter(CIVibrance, "camera")
 
         let colorControl = Filter("CIColorControls")
         colorControl.setValue("camera", "inputImage")
-        colorControl.setValue(1.3, "inputSaturation")
+        colorControl.setValue(1.2, "inputSaturation")
         colorControl.setValue(0.05, "inputBrightness")
         instruction.addFilter(colorControl, "camera")
     }
@@ -212,8 +218,8 @@ function exportSettings() {
  
     let bitrate = (HYPNO.composition.renderSize.width) * (HYPNO.composition.renderSize.height) * (30.0)
  
-    bitrate *= 0.42
- 
+    bitrate *= 0.27
+
     return {
         video: {
             averageBitRate: bitrate,
