@@ -78,7 +78,7 @@ function sequence (inputs) {
             speed: 1.0
         },
         {
-            cue: 62,
+            cue: 42,
             ticks: 90,
             speed: 1.0
         },
@@ -184,7 +184,7 @@ function render (context, instruction) {
     {
         //COLOR
         var CIVibrance = Filter("CIVibrance")
-        CIVibrance.setValue(0.2, "inputAmount")
+        CIVibrance.setValue(0.1, "inputAmount")
         instruction.addFilter(CIVibrance, "camera")
 
         let colorControl = Filter("CIColorControls")
@@ -202,7 +202,7 @@ function exportSettings() {
  
     let bitrate = (HYPNO.composition.renderSize.width) * (HYPNO.composition.renderSize.height) * (30.0)
  
-    bitrate *= 0.4
+    bitrate *= 0.25
  
     return {
         video: {
