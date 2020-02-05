@@ -62,11 +62,19 @@ function sequence (inputs) {
 
     let cameraTrack = Track ("camera")
     let duration = 0
+    let captureLength = 0
     clips.forEach(c=>{
+
         let cameraClip = new Clip(c.cue, fps(c.length), cameraInput.name, "video")
         cameraTrack.add(cameraClip)
         duration += fps(c.length)
+
+        if(c.cue + c.length > captureLength){
+            captureLength = c.cue + c.length
+        }
     })
+
+    print(captureLength)
 
     let musicTrack = new Track("music")
     let musicClip = new Clip(0.0, duration, musicInput.name, "audio")
@@ -89,7 +97,7 @@ function render (context, instruction) {
         instruction.addKernel(mirrorStack, "camera")
     }
 
-// i == 5 flip mirror for other half
+    // i == 5 flip mirror for other half
 
     //MIRROR EFFECT
     if(i > 0 && i < 6 && i != 3){
@@ -116,4 +124,23 @@ function render (context, instruction) {
     colorControls.setValue(1.2, "inputContrast")
     instruction.addFilter(colorControls, "camera")
 
+}
+
+function exportSettings() {
+ 
+    let bitrate = (HYPNO.composition.renderSize.width) * (HYPNO.composition.renderSize.height) * (30.0)
+ 
+    bitrate *= 0.28
+
+    return {
+        video: {
+            averageBitRate: bitrate,
+            profileLevel: "H264Baseline41"
+        },
+        audio: {
+            numberOfChannels: 2,
+            sampleRate: 44100,
+            bitRate: 64000
+        }
+    }
 }
