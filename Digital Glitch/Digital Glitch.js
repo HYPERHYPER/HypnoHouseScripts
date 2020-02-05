@@ -63,7 +63,8 @@ function sequence (inputs) {
             cue: 80,
             ticks: 55,
             speed: 1.0
-        },        {
+        },        
+        {
             cue: 40,
             ticks: 75,
             speed: 1.0
@@ -250,7 +251,7 @@ function exportSettings() {
  
     let bitrate = (HYPNO.composition.renderSize.width) * (HYPNO.composition.renderSize.height) * (30.0)
  
-    bitrate *= 0.42
+    bitrate *= 0.23
  
     return {
         video: {
