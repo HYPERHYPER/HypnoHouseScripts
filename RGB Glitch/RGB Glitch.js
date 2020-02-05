@@ -52,7 +52,6 @@ function sequence (inputs) {
 
     let cameraInput = inputs ["camera"];
     let musicInput = inputs["music.mp3"]
-    let jewelInput = inputs["normalmap.mp4"]
 
     let d = musicInput.duration
     let m = d / 8
@@ -218,7 +217,7 @@ function exportSettings() {
  
     let bitrate = (HYPNO.composition.renderSize.width) * (HYPNO.composition.renderSize.height) * (30.0)
  
-    bitrate *= 0.4
+    bitrate *= 0.29
  
     return {
         video: {
