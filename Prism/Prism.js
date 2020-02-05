@@ -187,21 +187,13 @@ function render (context, instruction) {
     starglow.setUniformf(instruction.time, "INSTRUCTION_TIME")
     instruction.addShader(starglow, "camera")
 
-    // CIColorControls
-    const CIColorControls = Filter("CIColorControls")
-    CIColorControls.setValue(1.5, "inputSaturation")
-    instruction.addFilter(CIColorControls, "camera")
-
-    var CIVibrance = Filter("CIVibrance")
-    CIVibrance.setValue(0.5, "inputAmount")
-    instruction.addFilter(CIVibrance, "camera")
 }
 
 function exportSettings() {
  
     let bitrate = (HYPNO.composition.renderSize.width) * (HYPNO.composition.renderSize.height) * (30.0)
  
-    bitrate *= 0.5
+    bitrate *= 0.3
  
     return {
         video: {
